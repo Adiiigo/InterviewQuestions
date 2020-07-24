@@ -96,6 +96,95 @@ int main() {
 Time Complexity - O(nlong)[sorting] + O(n)[traversing part part array] - O(nlong)
 Space Complexity - O(1) - no extra spaces except the constants
 
+//Approach 2:
+-> We are using array elements as index
+-> These indices should be less than size and value of these indices should be +ve
+-> If the value of the array at these indices is -ve we dont do anything coa this will make them positive => we do not want that
+-> Traverse the whole array to find the index of the first positive number in the array
 
+/*
+ * SmallestPositiveInteger_main.cpp
+ *
+ *  Created on: 25-Jul-2020
+ *      Author: aditi
+ */
+#include<vector>
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+using namespace std ;
 
+void acceptValues(vector<int>& array , int size){
 
+	for(int i = 0 ; i < size ; i++){
+		cout << "Enter value" ;
+		int temp = 0 ;
+		cin >> temp ;
+		array.push_back(temp) ;
+	}
+}
+
+void moveNeg(vector<int>& array , int size){
+
+	int j = 0 ;
+	for(int i = 0 ; i < size ; i++){
+		if(array[i] <= 0){
+			int temp = array[j] ;
+			array[j] = array[i] ;
+			array[i] = temp ;
+			j++;
+		}
+	}
+}
+
+void printValues(vector<int>array, int size){
+
+	for(int i = 0 ; i < size ; i++){
+		cout << array[i] << " " ;
+	}
+	cout << endl ;
+}
+
+int main() {
+
+	vector<int> array ;
+	int size = 0 ;
+
+	cout << "Enter Size:" ;
+	cin >> size ;
+
+	acceptValues(array , size) ;
+
+	moveNeg(array,size) ;
+
+	printValues(array,size) ;
+
+	/*
+	 * - The array elements work as index of the array
+	 * - We use these index to convert the number in these indexes to negative specifying their presence
+	 * - but we only do if the number in these index are positive coz we do not want neg numbers to be positive
+	 */
+
+	//Traversing the array
+	for(int i = 0 ; i < size ; i++){
+		if( abs(array[i])-1 < size && array[abs(array[i])-1] > 0 ){
+			array[ abs(array[i])-1 ] = -array[ abs(array[i])-1 ]  ;
+		}
+	}
+	printValues(array,size) ;
+
+	int answer = -1 ;
+	for(int i = 0 ; i < size ; i++){
+		if(array[i] > 0){
+			answer = i ;
+			break ;
+		}
+	}
+
+	if(answer != -1) cout << "The minimum positive number " << answer+1 ;
+	else cout << "The minimum positive number " << size+1 ;
+	return 0 ;
+}
+
+Time Complexity - O(n) 
+Space Complexity - O(1)
