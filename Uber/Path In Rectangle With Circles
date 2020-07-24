@@ -1,0 +1,118 @@
+There is a particle at (0,0). It needs to reach (20,20). There are several circles given with their radius and centre which can be overlapping. Find whether the particle can reach the final point from its initial position without touching or crossing any or the circles. Particle should not cross axes in its path.
+
+
+Solution:
+
+/*
+ * PathInRectangleWithCircles_main.cpp
+ *
+ *  Created on: 24-Jul-2020
+ *      Author: aditi
+ */
+#include<vector>
+#include<iostream>
+#include<cmath>
+#include<queue>
+using namespace std ;
+
+//left,top,right,down
+vector<vector<int>>directions {{0,-1},{-1,0},{0,1},{1,0}} ;
+
+void printVector(vector<vector<int>> lookup){
+
+	for(int row = 0 ; row < 5 ; row++ ){
+		for(int col = 0 ; col < 5 ; col++){
+			cout << lookup[row][col] << "  " ;
+		}
+		cout << endl ;
+	}
+
+}
+
+bool inBound(int row, int col){
+	return row >= 0 && row < 5 && col >= 0 && col < 5 ;
+}
+
+bool isPossible(vector<vector<int>>& lookup, int no_circle, int radius , vector<vector<int>>circles){
+
+	/*
+	 *  -1 = the cell is within the circle or on boundary of the circle
+	 *  0 = unvisited
+	 *  1 = visited/ possible
+	 */
+
+	for(int row = 0 ; row < 5 ; row++ ){
+		for(int col = 0 ; col < 5 ; col++){
+			for(int circle = 0 ; circle < no_circle ; circle++){
+				double xdist = pow(circles[circle][0]-1-row , 2) ;
+				double ydist = pow(circles[circle][1]-1-col , 2) ;
+				double distance = sqrt( xdist+ydist) ;
+				if( distance <= radius)
+				{
+					lookup[row][col] = -1 ;
+				}
+			}
+		}
+	}
+
+
+	printVector(lookup) ;
+
+	//Looking for the answer in all the four direction
+	queue<vector<int>> q ;
+	q.push({0,0}) ;
+
+	while(!q.empty()){
+
+		vector<int> temp = q.front();
+		q.pop() ;
+
+		for(vector<int>dir : directions){
+
+			int nrow = temp[0] + dir[0] ;
+			int ncol = temp[1] + dir[1] ;
+			if(inBound(nrow,ncol) == true && lookup[nrow][ncol] == 0){
+				lookup[nrow][ncol] = 1 ;
+				if(nrow == 4 && ncol == 4) break ;
+				q.push({nrow,ncol}) ;
+			}
+		}
+	}
+
+	printVector(lookup) ;
+
+	return (lookup[4][4] == 1) ;
+
+}
+
+
+int main(){
+
+	vector<vector<int>>lookup(5,vector<int>(5,0)) ;
+	int no_circle = 2 ;
+	int radius = 1 ;
+
+	vector<vector<int>>circles = {{1,3},{3,3}} ;
+
+	if(isPossible(lookup , no_circle , radius , circles)) cout << "Possible" ;
+	else cout << "Not Possible" ;
+
+	return 0 ;
+}
+
+
+
+/* output
+0  -1  -1  -1  0  
+0  0  -1  0  0  
+0  -1  -1  -1  0  
+0  0  -1  0  0  
+0  0  0  0  0  
+
+1  -1  -1  -1  1  
+1  1  -1  1  1  
+1  -1  -1  -1  1  
+1  1  -1  1  1  
+1  1  1  1  1  
+Possible
+*/
