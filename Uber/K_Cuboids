@@ -1,0 +1,15 @@
+There is a fixed size cuboid given. And it has several spherical holes in it. Their centre and radius values are given. These spherical holes can overlap. Problem is to divide the cuboid into k parts with same volume. Find the heights at which the cuboid should be cut parallel to x-axis.
+
+Points:
+- Fixed sized cuboid
+- Several spherical holes
+- given centre and sizes of the holes
+- Divide the cuboid into K parts
+- Find the heights at which the cuboid should be cut parallel to x-axis
+
+Solving steps:
+- Volume of the cuboid = l*b*h
+- Volume of the holes = 4/3 * pie * r^3
+- remaining volume - lbh - 4/3 * pie * r^3 = r^3(3-4*pie)/k 
+- remaining volume divided into k parts =  r^3(3-4*pie)/k 
+- Now the question comes that we have breath and width same but the height will vary => but while calculating the height we shoudl consider the spherical hole arrangement
