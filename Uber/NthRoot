@@ -1,0 +1,64 @@
+Solution:
+/*
+ * nthRoot_main.cpp
+ *
+ *  Created on: 24-Jul-2020
+ *      Author: aditi
+ */
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+double calNRoot(int number , int root){
+
+	/*
+	 *  if the number is within the range (0,1] that means the root of the number will [number,1]
+	 *  Eg: sqrt(0.09) = 0.3
+	 *
+	 *  if the number if not within the range (0,1] that means the root will lie [1,number]
+	 */
+
+	int low = 0 ;
+	int high = 0 ;
+	if(number >= 0 && number <= 1){
+		low = number ;
+		high = 1 ;
+	}
+	else{
+		low = 1 ;
+		high = number ;
+	}
+
+	double epsilon = 0.01 ;
+	double guess = low + (high-low)/2 ;
+	while( abs(pow(guess,root) - number) >= epsilon  ){
+		if(pow(guess,root) > number){
+			high = guess ;
+		}else{
+			low = guess ;
+		}
+		guess = low + (high-low)/2 ;
+	}
+	return guess ;
+}
+
+int main(){
+
+	int number = 0 ;
+	int power = 0 ;
+
+	cout << "Enter Number :" ;
+	cin >> number ;
+
+	cout << "Enter Power :" ;
+	cin >> power ;
+
+	double answer = calNRoot(number , power) ;
+
+	cout << "Answer = " << answer ;
+
+	return 0 ;
+}
+
+
+
