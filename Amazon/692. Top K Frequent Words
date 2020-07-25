@@ -1,0 +1,107 @@
+Given a non-empty list of words, return the k most frequent elements.
+
+Your answer should be sorted by frequency from highest to lowest. If two words have the same frequency, then the word with the lower alphabetical order comes first.
+
+Example 1:
+
+Input: ["i", "love", "leetcode", "i", "love", "coding"], k = 2
+Output: ["i", "love"]
+Explanation: "i" and "love" are the two most frequent words.
+    Note that "i" comes before "love" due to a lower alphabetical order.
+
+Example 2:
+
+Input: ["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], k = 4
+Output: ["the", "is", "sunny", "day"]
+Explanation: "the", "is", "sunny" and "day" are the four most frequent words,
+    with the number of occurrence being 4, 3, 2 and 1 respectively.
+
+Note:
+
+    You may assume k is always valid, 1 ≤ k ≤ number of unique elements.
+    Input words contain only lowercase letters.
+
+Follow up:
+
+    Try to solve it in O(n log k) time and O(n) extra space.
+
+Solutions:
+-> creating the hashmap to get the frequency
+-> create the vector and sort it lexicographically
+-> remove top k elements fromt the vector
+
+class Solution {
+    
+    static bool mySort(const pair<string,int>& a,
+                const pair<string,int>& b){
+        
+        if(a.second == b.second){
+            
+            for(int i = 0 ; i < min(a.first.size() , b.first.size()) ; i++){
+                if(a.first[i] != b.first[i]){
+                    if(( a.first[i] - 'a') > (b.first[i]-'a')){
+                        return false ;
+                    }
+                    else if(( a.first[i] - 'a') < (b.first[i]-'a')){
+                        return true ;
+                    }       
+                }
+            }
+            
+            //for words like [abcd , abc]
+            if(a.first.size() > b.first.size()){
+                return false ;
+            }
+            else{
+                return true ;
+            }
+        }
+        
+        // frequnecy is not same
+        return a.second > b.second ;
+    }
+    
+    
+public:
+    vector<string> topKFrequent(vector<string>& words, int k) {
+        /* 
+        *  ------------
+        *  |word|count|
+        *  ------------
+        */ 
+        unordered_map<string,int> lookup ;
+        vector<string> answer ;
+        
+        for(string word : words){
+            lookup[word]++ ;    
+        }
+        
+        for(auto it : lookup){
+             cout << it.first << "|" << it.second << endl;
+        }
+        
+        vector<pair<string,int>> temp ;
+        for(auto it : lookup){
+             temp.push_back({it.first,it.second}) ;
+        }
+        
+        
+        sort(temp.begin() , temp.end(), mySort) ;
+        cout << "---------------------" << endl;
+        for(auto it : temp){
+             cout << it.first << "|" << it.second << endl;
+        }
+        
+        vector<pair<string,int>> :: iterator it=temp.begin() ;
+        for(int i = 0 ; i < k && it != temp.end() ; i++,it++){
+            answer.push_back(it->first) ;
+        }
+        
+        return answer;
+    }
+};
+
+Time Complexity - O(n)[hashmap] + O(nlogn)[sort] + O(k)[get top k elements] - o(nlogn)
+Space Complexity - o(n)[hashmap] + O(n)[vector] 
+
+//Approach 2 : [using priority queue]
