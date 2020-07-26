@@ -1,0 +1,184 @@
+We are given a binary tree (with root node root), a target node, and an integer value K.
+
+Return a list of the values of all nodes that have a distance K from the target node.  The answer can be returned in any order.
+
+ 
+
+Example 1:
+
+Input: root = [3,5,1,6,2,0,8,null,null,7,4], target = 5, K = 2
+
+Output: [7,4,1]
+
+Explanation: 
+The nodes that are a distance 2 from the target node (with value 5)
+have values 7, 4, and 1.
+
+
+
+Note that the inputs "root" and "target" are actually TreeNodes.
+The descriptions of the inputs above are just serializations of these objects.
+
+ 
+
+Note:
+
+    The given tree is non-empty.
+    Each node in the tree has unique values 0 <= node.val <= 500.
+    The target node is a node in the tree.
+    0 <= K <= 1000.
+
+Solutions:
+-> The tree here is acyclic and directed tree but if we have look for the k dist node we not only have to look for the child nodes but also for parent node
+-> Since every node has the information of their children we have to find the information on thier parent nodes. hence create hashtable which stores this information
+-> We have to use queue to traverse through the tree and size to keep the track of the levels
+-> seen set to make sure we do not add the parent again.
+
+/*
+ * AllNodesDistanceKinBinaryTree_main.cpp
+ *
+ *  Created on: 26-Jul-2020
+ *      Author: aditi
+ */
+
+#include<iostream>
+#include<unordered_map>
+#include<unordered_set>
+#include<queue>
+using namespace std ;
+
+/*
+ * Definition of the Binary TreeNode
+ */
+struct TreeNode{
+	int val ;
+	TreeNode* left ;
+	TreeNode* right ;
+	TreeNode(int x) : val(x) , left(nullptr) , right(nullptr) {} ;
+};
+
+void printVector(vector<int> nums){
+
+	cout << "Answer vector :" ;
+	for(int num : nums){
+		cout << num << "," ;
+	}
+	cout << endl ;
+}
+
+void printMap(unordered_map<TreeNode*, TreeNode*>& parentLookup){
+
+	cout << endl << "Parent Map :" << endl;
+	for(pair<TreeNode*,TreeNode*> eachPair : parentLookup){
+		cout << eachPair.first->val << "|" << eachPair.second->val << endl;
+
+	}
+	cout << endl ;
+}
+
+void calParentLookup(unordered_map<TreeNode*, TreeNode*>& parentLookup,TreeNode* root){
+
+	queue<TreeNode*> q ;
+	q.push(root) ;
+
+	while(!q.empty()){
+
+		TreeNode* front = q.front() ;
+		q.pop() ;
+
+		if(front->left != NULL){
+			parentLookup.insert({front->left, front}) ;
+			q.push(front->left) ;
+		}
+
+		if(front->right != NULL){
+			parentLookup.insert({front->right, front}) ;
+			q.push(front->right) ;
+		}
+	}
+}
+
+vector<int> distanceK(TreeNode* root , TreeNode* target , int K){
+
+	vector<int> answer ;
+
+	unordered_map<TreeNode*, TreeNode*> parentLookup ;
+
+	calParentLookup(parentLookup , root) ;
+	printMap(parentLookup) ;
+
+	int currLevel = 0 ;
+
+	queue<TreeNode*> q ;
+
+	unordered_set<TreeNode*> seen ;
+
+	q.push(target) ;
+	seen.insert(target) ;
+
+	while(!q.empty()){
+
+		int size = q.size() ;
+
+		if(currLevel == K){
+			for(int i = 0 ; i < size ; i++){
+				TreeNode* front = q.front() ;
+				q.pop() ;
+				answer.push_back(front->val) ;
+			}
+			break ;
+		}
+
+		for(int i = 0 ; i < size ; i++){
+
+			TreeNode* front = q.front() ;
+ 			q.pop() ;
+
+			if(front->left != NULL && seen.find(front->left) == seen.end()) {
+				q.push(front->left) ;
+				seen.insert(front->left) ;
+			}
+
+			if(front->right != NULL && seen.find(front->right) == seen.end()) {
+				q.push(front->right) ;
+				seen.insert(front->right) ;
+			}
+
+			auto it = parentLookup.find(front) ;
+			if(it != parentLookup.end() && seen.find(it->second) == seen.end()){
+				//parent exists
+				q.push(it->second) ;
+				seen.insert(it->second) ;
+			}
+		}
+		currLevel++ ;
+	}
+
+	return answer ;
+}
+
+int main()
+{
+	TreeNode* root = new TreeNode(3) ;
+	root->left = new TreeNode(5) ;
+	root->right = new TreeNode(1) ;
+	root->left->left = new TreeNode(6) ;
+	root->left->right = new TreeNode(2) ;
+	root->left->right->left = new TreeNode(7) ;
+	root->left->right->right = new TreeNode(4) ;
+	root->right->left = new TreeNode(0) ;
+	root->right->right = new TreeNode(8) ;
+
+	TreeNode* target = root->left ;
+
+	vector<int> answer ;
+	int k = 0 ;
+	answer = distanceK(root , target , k) ;
+
+	printVector(answer) ;
+
+	return 0 ;
+}
+Time Complexity - O(m+n)[edges and node][BFS] but for tree no of edges are nodes-1 => O(n-1+n) = O(n)
+Space Complexity - O(n)
+Reference Link - https://www.youtube.com/watch?v=nPtARJ2cYrg
