@@ -30,3 +30,4 @@ Note:
     L + M <= A.length <= 1000
     0 <= A[i] <= 1000
 
+solutions : for every L, we can use two arrays prefix M and suffix M
