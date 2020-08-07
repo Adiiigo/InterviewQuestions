@@ -1,0 +1,121 @@
+The thief has found himself a new place for his thievery again. There is only one entrance to this area, called the "root." Besides the root, each house has one and only one parent house. After a tour, the smart thief realized that "all houses in this place forms a binary tree". It will automatically contact the police if two directly-linked houses were broken into on the same night.
+
+Determine the maximum amount of money the thief can rob tonight without alerting the police.
+
+Example 1:
+
+Input: [3,2,3,null,3,null,1]
+
+     3
+    / \
+   2   3
+    \   \ 
+     3   1
+
+Output: 7 
+Explanation: Maximum amount of money the thief can rob = 3 + 3 + 1 = 7.
+
+Example 2:
+
+Input: [3,4,5,1,3,null,1]
+
+     3
+    / \
+   4   5
+  / \   \ 
+ 1   3   1
+
+Output: 9
+Explanation: Maximum amount of money the thief can rob = 4 + 5 = 9.
+
+Solutions:
+
+// Approach 1
+-> Thought of using levels but the levels will not work
+-> we have only have to not look for the nodes not in the adjacent levels but after one level down we can all the levels
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+    
+    void helper(TreeNode* root , int level , int& odd , int& even){
+        
+        if(root == NULL) return ;
+        
+        if(level%2 == 0) even += root->val ;
+        else odd += root->val ;
+        
+        helper(root->left , level+1 , odd , even) ;
+        helper(root->right , level+1 , odd , even) ;
+    }
+    
+public:
+    int rob(TreeNode* root) {
+        
+        int level = 0 ;
+        int odd = 0 ; 
+        int even = 0 ; 
+        helper(root , level , odd , even) ;
+        
+        return odd >= even ? odd : even ;
+        
+    }
+};
+
+Fails: [4,1,null,2,null,3]
+
+//Approach 2:
+-> using pairs to store whether the current node is included or not. 
+-> if it is included then we do not have to include the children and add the grandchildren
+-> if it is not included then we add the maximum of when thay are included or not
+-> if curnode is not selected, and at the particular level, it is fine if left child is included and not right child, this we will take max of the pairs for left and right
+
+Test cases  :
+[3,2,3,null,3,null,1]
+[3,4,5,1,3,null,1]
+[4,1,null,2,null,3]
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+    
+     pair<int,int> helper(TreeNode* root) {
+         
+         if(root == NULL ) return {0,0} ;
+         
+         pair<int,int> left = helper(root->left) ;
+         pair<int,int> right = helper(root->right) ;
+         
+         int robCurNode = root->val + left.second + right.second ;
+         int notRobCurNode = max(left.first , left.second) + max(right.first,right.second) ;
+         
+         return {robCurNode , notRobCurNode } ;
+         
+    }
+    
+public:
+    int rob(TreeNode* root) {
+        pair<int,int> choices{0,0} ;
+        
+        choices = helper(root) ;
+        return choices.first >= choices.second ? choices.first : choices.second ;
+    }
+};
